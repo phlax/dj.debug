@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-#
-# Copyright (C) Ryan Northey <ryan@synca.io>
-#
-# This file is a part of the Pootle project. It is distributed under the GPL3
-# or later license. See the LICENSE file for a copy of the license and the
-# AUTHORS file for copyright and authorship information.
 
-__import__('pkg_resources').declare_namespace(__name__)
+from .builtin import trace_debug
+from .sql import debug_sql
+from .log import log_new_queries, log_timing
+from .memory import memusage
+from .timing import timings
+
+
+__all__ = (
+    "debug_sql", "log_new_queries", "log_timing", "memusage",
+    "timings", "trace_debug")
