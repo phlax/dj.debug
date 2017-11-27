@@ -57,7 +57,7 @@ setup(
     keywords='',
     author='Ryan Northey',
     author_email='ryan@synca.io',
-    url='http://github.com/phlax/dj.debug',
+    url='http://github.com/translate/dj.debug',
     license='GPL3',
     packages=find_packages(),
     namespace_packages=['dj'],

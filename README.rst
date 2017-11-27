@@ -19,7 +19,7 @@ For development install
 
 .. code-block:: console
 
-  $ pip install -e git+git@github.com:phlax/dj.debug#egg=dj.debug
+  $ pip install -e git+git@github.com:translate/dj.debug#egg=dj.debug
   $ pip install dj.debug[test]
 
 
@@ -104,11 +104,11 @@ are too complex, have overly large results, etc. You can also use the output in 
 
 
 
-.. |build| image:: https://img.shields.io/travis/phlax/dj.debug/master.svg?style=flat-square
+.. |build| image:: https://img.shields.io/travis/translate/dj.debug/master.svg?style=flat-square
         :alt: Build Status
-        :target: https://travis-ci.org/phlax/dj.debug/branches
+        :target: https://travis-ci.org/translate/dj.debug/branches
 
 
-.. |coverage| image:: https://img.shields.io/codecov/c/github/phlax/dj.debug/master.svg?style=flat-square
-        :target: https://codecov.io/gh/phlax/dj.debug/branch/master
+.. |coverage| image:: https://img.shields.io/codecov/c/github/translate/dj.debug/master.svg?style=flat-square
+        :target: https://codecov.io/gh/translate/dj.debug/branch/master
         :alt: Test Coverage
