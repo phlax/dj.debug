@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import gc
+import logging
 import re
 import resource
 import time
@@ -13,31 +14,35 @@ from dj.debug import (
     debug_sql, log_new_queries, log_timing, memusage, timings,
     trace_debug)
 
+logger = logging.getLogger(__name__)
+
 
 def test_debug_timing_logger(caplog):
+    caplog.set_level(logging.DEBUG)
     start = time.time()
 
-    log_timing(start)
-    message = caplog.records()[0].message
+    log_timing(start, debug_logger=logger)
+    message = caplog.records[0].msg
     assert message.startswith("Timing: ")
     assert message.endswith(" seconds")
 
-    log_timing(start, timed="Foo")
-    message = caplog.records()[1].message
+    log_timing(start, timed="Foo", debug_logger=logger)
+    message = caplog.records[1].msg
     assert message.startswith("Timing for Foo: ")
     assert message.endswith(" seconds")
 
 
 def test_debug_timing_contextmanager(caplog):
-    with timings():
+    caplog.set_level(logging.DEBUG)
+    with timings(debug_logger=logger):
         pass
-    message = caplog.records()[0].message
+    message = caplog.records[0].msg
     assert message.startswith("Timing: ")
     assert message.endswith(" seconds")
 
-    with timings(timed="Foo"):
+    with timings(timed="Foo", debug_logger=logger):
         pass
-    message = caplog.records()[1].message
+    message = caplog.records[1].msg
     assert message.startswith("Timing for Foo: ")
     assert message.endswith(" seconds")
 
@@ -46,21 +51,25 @@ def test_debug_timing_contextmanager(caplog):
 def test_debug_sql_logger(caplog, settings):
     from django.db import connection
 
+    caplog.set_level(logging.DEBUG)
+
     settings.DEBUG = True
 
     queries = len(connection.queries)
 
-    log_new_queries(queries)
-    assert len(caplog.records()) == 1
-    assert caplog.records()[0].message == "total db calls: 0"
+    log_new_queries(queries, debug_logger=logger)
+    assert len(caplog.records) == 2
+    assert caplog.records[0].message == "total db calls: 0"
+    assert caplog.records[1].message == "total db time: 0"
 
     # trigger some sql and log
     get_user_model().objects.count()
-    log_new_queries(queries)
 
-    timing = caplog.records()[1].message
-    sql = caplog.records()[2].message
-    assert caplog.records()[3].message == "total db calls: 1"
+    log_new_queries(queries, debug_logger=logger)
+
+    timing = caplog.records[2].msg
+    sql = caplog.records[3].message
+    assert caplog.records[4].message == "total db calls: 1"
 
     # match the timing, sql
     assert re.match("^\d+?\.\d+?$", timing)
@@ -70,22 +79,24 @@ def test_debug_sql_logger(caplog, settings):
 
 @pytest.mark.django_db
 def test_debug_sql_contextmanager(caplog, settings):
+    caplog.set_level(logging.DEBUG)
 
-    with debug_sql():
+    with debug_sql(debug_logger=logger):
         pass
-    assert len(caplog.records()) == 1
-    assert caplog.records()[0].message == "total db calls: 0"
+    assert len(caplog.records) == 2
+    assert caplog.records[0].message == "total db calls: 0"
+    assert caplog.records[1].message == "total db time: 0"
 
     # should work even when debug is False
     settings.DEBUG = False
 
     # trigger some sql and log
-    with debug_sql():
+    with debug_sql(debug_logger=logger):
         get_user_model().objects.count()
 
-    timing = caplog.records()[1].message
-    sql = caplog.records()[2].message
-    assert caplog.records()[3].message == "total db calls: 1"
+    timing = caplog.records[2].message
+    sql = caplog.records[3].message
+    assert caplog.records[4].message == "total db calls: 1"
 
     # match the timing, sql
     assert re.match("^\d+?\.\d+?$", timing)
