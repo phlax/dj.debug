@@ -16,7 +16,6 @@ extras_require['test'] = [
     "pytest",
     "pytest-mock",
     "pytest-django",
-    "pytest-capturelog",
     "pytest-coverage",
     "coverage",
     "codecov",
